@@ -1,6 +1,7 @@
 #ignore temporary xml and png files
 *.png
 *.xml
+cache/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
