@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from mod_python import apache
+from mod_python import util
 import datetime
 
 
@@ -86,8 +88,13 @@ def handleResponse(response):
 
   plt.savefig("cache/plot.png")
 
+def index(req):
+  if checkForUpdate(xmlfilename):
+    xmldata = doRequest()
+    if xmldata is not None:
+      handleResponse(xmldata)
 
-if checkForUpdate(xmlfilename):
-  xmldata = doRequest()
-  if xmldata is not None:
-    handleResponse(xmldata)
+  req.content_type = "text/html"
+	req.send_http_header()
+  req.write('<img src="cache/plot.png" />')
+  
