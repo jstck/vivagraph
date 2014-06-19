@@ -88,13 +88,17 @@ def handleResponse(response):
 
   plt.savefig("cache/plot.png")
 
-def index(req):
-  if checkForUpdate(xmlfilename):
-    xmldata = doRequest()
-    if xmldata is not None:
-      handleResponse(xmldata)
+def doUpdate():
+if checkForUpdate(xmlfilename):
+  xmldata = doRequest()
+  if xmldata is not None:
+    handleResponse(xmldata)
 
+def index(req):
+  doUpdate()
   req.content_type = "text/html"
 	req.send_http_header()
   req.write('<img src="cache/plot.png" />')
-  
+
+if __name__ == "__main__":
+  doUpdate()
