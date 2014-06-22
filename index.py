@@ -99,10 +99,13 @@ def doUpdate():
       handleResponse(xmldata)
 
 def index(req):
+  from mako.template import Template
   doUpdate()
   req.content_type = "text/html"
   req.send_http_header()
-  req.write('<img src="cache/plot.png" />')
+
+  tpl = Template(filename=fullfile("template.html"))
+  req.write(tpl.render())
 
 if __name__ == "__main__":
   doUpdate()
