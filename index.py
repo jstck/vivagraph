@@ -101,11 +101,11 @@ def doUpdate():
 def index(req):
   from mako.template import Template
   doUpdate()
-  req.content_type = "text/html"
+  req.content_type = "text/html; charset=UTF-8"
   req.send_http_header()
 
-  tpl = Template(filename=fullfile("template.html"))
-  req.write(tpl.render())
+  tpl = Template(filename=fullfile("template.html"), input_encoding="utf-8")
+  req.write(tpl.render_unicode().encode('utf-8', 'replace'))
 
 if __name__ == "__main__":
   doUpdate()
