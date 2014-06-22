@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 
-from mod_python import apache
-from mod_python import util
 import datetime
-
+import os
 
 xmlfilename="cache/data.xml"
 
+def fullfile(filename):
+  return os.path.join(os.path.dirname(os.path.realpath(__file__)), filename)
+
 def checkForUpdate(filename,maxage=3600):
-  import os
-  if not os.path.exists(filename):
+  ff = fullfile(filename)
+
+  if not os.path.exists(ff):
     return True
 
-  timestamp = os.path.getmtime(filename)
+  timestamp = os.path.getmtime(ff)
   return datetime.datetime.fromtimestamp(timestamp+maxage)<datetime.datetime.now()
 
 
@@ -53,13 +55,15 @@ def doRequest(days=7):
   return response.read()
 
 def handleResponse(response):
+  import matplotlib
+  matplotlib.use("Agg")
   import matplotlib.pyplot as plt
   import xml.etree.ElementTree as ET
 
 
   xmlroot = ET.fromstring(response)
   xml = ET.ElementTree(xmlroot)
-  xml.write(xmlfilename)
+  xml.write(fullfile(xmlfilename))
 
   #Uglily grab all the ViVaPoint nodes
   nodes = xml.findall('*/*/*/*')
@@ -86,18 +90,18 @@ def handleResponse(response):
 
   fig.autofmt_xdate()
 
-  plt.savefig("cache/plot.png")
+  plt.savefig(fullfile("cache/plot.png"))
 
 def doUpdate():
-if checkForUpdate(xmlfilename):
-  xmldata = doRequest()
-  if xmldata is not None:
-    handleResponse(xmldata)
+  if checkForUpdate(xmlfilename):
+    xmldata = doRequest()
+    if xmldata is not None:
+      handleResponse(xmldata)
 
 def index(req):
   doUpdate()
   req.content_type = "text/html"
-	req.send_http_header()
+  req.send_http_header()
   req.write('<img src="cache/plot.png" />')
 
 if __name__ == "__main__":

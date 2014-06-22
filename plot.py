@@ -2,7 +2,12 @@
 
 import xml.etree.ElementTree as ET
 import datetime
+
+import matplotlib
+matplotlib.use("Agg")
+
 import matplotlib.pyplot as plt
+
 
 xmltree = ET.parse('test.xml')
 
